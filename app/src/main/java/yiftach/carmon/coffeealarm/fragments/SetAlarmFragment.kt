@@ -12,45 +12,55 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import yiftach.carmon.coffeealarm.alarmTools.Alarm
 import yiftach.carmon.coffeealarm.R
+import yiftach.carmon.coffeealarm.databinding.FragmentCurrentAlarmBinding
+import yiftach.carmon.coffeealarm.databinding.FragmentSetAlarmBinding
 import yiftach.carmon.coffeealarm.viewModels.SetAlarmViewModel
 import java.util.*
 
 
 class SetAlarmFragment : Fragment() {
 
-    lateinit var set_btn: Button
-    lateinit var timePicker: TimePicker
     private val setAlarmViewModel: SetAlarmViewModel by activityViewModels()
+
+    private var _binding: FragmentSetAlarmBinding? = null
+    private val binding get() = _binding!!
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+
+        _binding = FragmentSetAlarmBinding.inflate(inflater, container, false)
+
 
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_set_alarm, container, false)
-        timePicker = view.findViewById(R.id.time_picker)
-        timePicker.setIs24HourView(DateFormat.is24HourFormat(activity))
-        set_btn = view.findViewById(R.id.set_btn)
-        set_btn.setOnClickListener {
+        binding.timePicker.setIs24HourView(DateFormat.is24HourFormat(activity))
+
+        // Set snooze number picker
+        binding.snoozeNp.maxValue = 10
+        binding.snoozeNp.minValue = 0
+        binding.snoozeNp.value = 3
+
+        binding.setBtn.setOnClickListener {
             scheduleAlarm()
+            requireActivity().onBackPressed()
         }
-        return view
+        return binding.root
     }
 
 
     private fun scheduleAlarm() {
         val alarm = Alarm(
             Random().nextInt(Int.MAX_VALUE),
-            getHour(timePicker),
-            getMinute(timePicker),
-            "TEMP_title", //TODO get title
-            0, //TODO add snoozes left
+            getHour(binding.timePicker),
+            getMinute(binding.timePicker),
+            binding.titleEt.text.toString(),
+            binding.snoozeNp.value,
             false,
         )
         alarm.schedule(requireContext())
         setAlarmViewModel.setAlarm(requireActivity(), alarm)
-        activity?.finish() // TODO navigate back
     }
 
 

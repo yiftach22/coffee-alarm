@@ -31,4 +31,16 @@ class CurrentAlarmViewModel() : ViewModel() {
         return null
     }
 
+    fun removeAlarm(activity:Activity) {
+        val sp = activity.getPreferences(Context.MODE_PRIVATE)
+        with(sp.edit()){
+            putBoolean("isSet", false)
+            remove("alarmId")
+            remove ("hour")
+            remove("minute")
+            remove("title")
+            remove("snoozesLeft")
+            apply()
+        }
+    }
 }

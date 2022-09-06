@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import java.util.*
-
+import kotlin.math.min
 
 
 class Alarm(
@@ -35,7 +35,7 @@ class Alarm(
             calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1)
         }
 
-        val toastText = "One Time Alarm $title scheduled for ${getDayName(calendar)}"
+        val toastText = String.format("Alarm $title scheduled for %02d:%02d", hour, minute)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmPendingIntent)
         Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
         this.started = true;
@@ -51,5 +51,17 @@ class Alarm(
             Calendar.FRIDAY -> "Friday"
             else -> "Saturday"
         }
+    }
+
+
+    fun cancelAlarm(context: Context) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmBroadcastReceiver::class.java)
+        val alarmPendingIntent = PendingIntent.getBroadcast(context, alarmId, intent, 0)
+        alarmManager.cancel(alarmPendingIntent)
+        started = false
+        val toastText =
+            String.format("Alarm $title cancelled for %02d:%02d", hour, minute)
+        Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
     }
 }

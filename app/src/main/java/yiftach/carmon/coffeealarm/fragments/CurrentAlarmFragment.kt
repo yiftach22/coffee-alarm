@@ -33,12 +33,7 @@ class CurrentAlarmFragment : Fragment() {
         _binding = FragmentCurrentAlarmBinding.inflate(inflater, container, false)
         activeAlarm = currentAlarmViewModel.getAlarmFromSp(requireActivity())
         if (activeAlarm == null) {
-            binding.currentAlarmLayout.visibility = View.GONE
-            binding.noAlarmLayout.visibility = View.VISIBLE
-            binding.setAlarmBtn.setOnClickListener {
-                binding.root.findNavController()
-                    .navigate(R.id.action_currentAlarmFragment_to_setAlarmFragment)
-            }
+            setNoAlarmView()
         } else {
             setAlarmView()
         }
@@ -46,11 +41,20 @@ class CurrentAlarmFragment : Fragment() {
     }
 
 
+    private fun setNoAlarmView(){
+        binding.currentAlarmLayout.visibility = View.GONE
+        binding.noAlarmLayout.visibility = View.VISIBLE
+        binding.setAlarmBtn.setOnClickListener {
+            binding.root.findNavController()
+                .navigate(R.id.action_currentAlarmFragment_to_setAlarmFragment)
+        }
+    }
+
+
     private fun setAlarmView() {
 
         binding.currentAlarmLayout.visibility = View.VISIBLE
         binding.noAlarmLayout.visibility = View.GONE
-
 
         val is24 = is24HourFormat(activity)
         var hours = activeAlarm!!.hour
@@ -72,7 +76,10 @@ class CurrentAlarmFragment : Fragment() {
         binding.alarmTimeTv.text = String.format("%02d:%02d", hours, activeAlarm!!.minute)
         binding.alarmTitleTv.text = activeAlarm!!.title
         binding.snoozeNumberTv.text = activeAlarm!!.snoozesLeft.toString()
-
-
+        binding.cancelBtn.setOnClickListener {
+            activeAlarm!!.cancelAlarm(requireContext())
+            currentAlarmViewModel.removeAlarm(requireActivity())
+            setNoAlarmView()
+        }
     }
 }
