@@ -37,7 +37,7 @@
         <service android:name=".alarmTools.AlarmService" />
 
         <receiver
-            android:name=".AlarmBroadcastReceiver"
+            android:name=".alarmTools.AlarmBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
