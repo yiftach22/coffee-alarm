@@ -11,8 +11,6 @@ import android.widget.TimePicker
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import yiftach.carmon.coffeealarm.alarmTools.Alarm
-import yiftach.carmon.coffeealarm.R
-import yiftach.carmon.coffeealarm.databinding.FragmentCurrentAlarmBinding
 import yiftach.carmon.coffeealarm.databinding.FragmentSetAlarmBinding
 import yiftach.carmon.coffeealarm.viewModels.SetAlarmViewModel
 import java.util.*

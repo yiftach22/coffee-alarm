@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.widget.Toast
+import yiftach.carmon.coffeealarm.TITLE
 
-const val TITLE = "TITLE"
 
 class AlarmBroadcastReceiver:BroadcastReceiver() {
 

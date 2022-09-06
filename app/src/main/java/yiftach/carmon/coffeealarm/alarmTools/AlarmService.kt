@@ -18,11 +18,13 @@ class AlarmService: Service() {
 
     lateinit var mediaPlayer: MediaPlayer
     lateinit var vibrator: Vibrator
+    lateinit var alarm:Alarm
 
     override fun onCreate() {
         super.onCreate()
         mediaPlayer = MediaPlayer.create(this, R.raw.alarm)
         mediaPlayer.isLooping = true
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
@@ -32,18 +34,19 @@ class AlarmService: Service() {
             @Suppress("DEPRECATION")
             vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notificationIntent = Intent(this, RingActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
 
-        val alarmTitle = "BLABLABLA"
+        val alarmTitle = intent?.getStringExtra(TITLE)
+        val numberOfSnoozes = intent?.getIntExtra("numOfSnoozes", 0)
+        val alarmContentText = "${if (numberOfSnoozes == 0) "No" else numberOfSnoozes} snoozes left!"
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(alarmTitle)
-            .setContentText("Ring Ring .. Ring Ring")
+            .setContentText(alarmContentText)
             .setSmallIcon(R.drawable.ic_alarm_black_24dp)
             .setContentIntent(pendingIntent)
             .build()

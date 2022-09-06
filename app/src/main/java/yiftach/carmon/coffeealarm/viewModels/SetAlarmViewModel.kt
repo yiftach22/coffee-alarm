@@ -3,6 +3,7 @@ package yiftach.carmon.coffeealarm.viewModels
 import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import yiftach.carmon.coffeealarm.*
 import yiftach.carmon.coffeealarm.alarmTools.Alarm
 
 class SetAlarmViewModel: ViewModel() {
@@ -10,12 +11,12 @@ class SetAlarmViewModel: ViewModel() {
     fun setAlarm(activity: Activity, alarm: Alarm){
         val sp = activity.getPreferences(Context.MODE_PRIVATE)
         with(sp.edit()){
-            putInt("alarmId", alarm.alarmId)
-            putInt("hour", alarm.hour)
-            putInt("minute", alarm.minute)
-            putBoolean("isSet", true)
-            putString("title", alarm.title)
-            putInt("snoozesLeft", alarm.snoozesLeft)
+            putInt(ALARM_ID, alarm.alarmId)
+            putInt(HOUR, alarm.hour)
+            putInt(MINUTE, alarm.minute)
+            putBoolean(IS_SET, true)
+            putString(TITLE, alarm.title)
+            putInt(SNOOZES_LEFT, alarm.snoozesLeft)
             apply()
         }
     }

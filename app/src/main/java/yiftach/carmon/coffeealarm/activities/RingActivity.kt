@@ -1,6 +1,7 @@
 package yiftach.carmon.coffeealarm.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -8,9 +9,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,15 +22,16 @@ import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.label.Category
 import org.tensorflow.lite.task.vision.detector.ObjectDetector
 import yiftach.carmon.coffeealarm.alarmTools.AlarmService
-import yiftach.carmon.coffeealarm.R
+import yiftach.carmon.coffeealarm.SNOOZES_LEFT
+import yiftach.carmon.coffeealarm.databinding.ActivityRingBinding
+
+const val DATA = "data"
 
 
 class RingActivity : AppCompatActivity() {
-    private lateinit var inputImageView: ImageView
-    private lateinit var takePhotoBtn: Button
     private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
-    private lateinit var exitBtn:Button
-    private lateinit var titleTv: TextView
+
+    private lateinit var binding:ActivityRingBinding
 
     companion object {
         private const val CAMERA_PERMISSION_CODE = 1
@@ -41,33 +40,30 @@ class RingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ring);
+        binding = ActivityRingBinding.inflate(layoutInflater)
+        setContentView(binding.root);
 
-        // find views
-        exitBtn = findViewById(R.id.exit_btn)
-        takePhotoBtn = findViewById(R.id.take_photo_btn)
-        inputImageView = findViewById(R.id.imageView)
-        titleTv = findViewById(R.id.title_tv)
-
-
-        exitBtn.setOnClickListener {
+        binding.exitBtn.setOnClickListener {
             finish()
         }
 
+        registerCameraLauncher()
 
-        cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-            if (result.resultCode == RESULT_OK && result.data != null){
-                val bundle = result.data!!.extras
-                val bitmap = bundle?.get("data") as Bitmap
-                inputImageView.setImageBitmap(bitmap)
-                lifecycleScope.launch(Dispatchers.Default) { runObjectDetection(bitmap) }
+        val sp = this.getPreferences(Context.MODE_PRIVATE)
+        val numberOfSnoozes = sp.getInt(SNOOZES_LEFT, 0)
+        if (numberOfSnoozes >0){
+            binding.snoozeLayout.visibility = View.VISIBLE
+            binding.snoozeBtn.setOnClickListener {
+                // TODO set snooze
             }
+        } else {
+            binding.snoozeLayout.visibility = View.GONE
         }
 
 
 
 
-        takePhotoBtn.setOnClickListener {
+        binding.takePhotoBtn.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.CAMERA,
@@ -83,6 +79,19 @@ class RingActivity : AppCompatActivity() {
                     CAMERA_PERMISSION_CODE)
             }
         }
+    }
+
+    private fun registerCameraLauncher() {
+        cameraLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == AppCompatActivity.RESULT_OK && result.data != null) {
+                    val bundle = result.data!!.extras
+                    val bitmap = bundle?.get(DATA) as Bitmap
+                    binding.imageView.setImageBitmap(bitmap)
+                    lifecycleScope.launch(Dispatchers.Default) { runObjectDetection(bitmap) }
+                }
+
+            }
     }
 
     /**
@@ -130,13 +139,13 @@ class RingActivity : AppCompatActivity() {
         // Draw the detection result on the bitmap and show it.
         val imgWithResult = drawDetectionResult(bitmap, resultToDisplay)
         runOnUiThread {
-            inputImageView.setImageBitmap(imgWithResult)
+            binding.imageView.setImageBitmap(imgWithResult)
             if (resultText == ""){
                 resultText = "No Coffee Found. Try again"
             }
-            titleTv.text = resultText
-            exitBtn.visibility = View.VISIBLE
-            takePhotoBtn.visibility = View.GONE
+            binding.titleTv.text = resultText
+            binding.exitBtn.visibility = View.VISIBLE
+            binding.takePhotoBtn.visibility = View.GONE
 
 
         }
