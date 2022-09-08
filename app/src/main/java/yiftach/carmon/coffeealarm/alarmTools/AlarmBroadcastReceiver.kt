@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.widget.Toast
+import yiftach.carmon.coffeealarm.SNOOZES_LEFT
+import yiftach.carmon.coffeealarm.SNOOZE_LENGTH
 import yiftach.carmon.coffeealarm.TITLE
 
 
@@ -29,6 +31,8 @@ class AlarmBroadcastReceiver:BroadcastReceiver() {
     private fun startAlarmService(context: Context, intent: Intent) {
         val intentService = Intent(context, AlarmService::class.java)
         intentService.putExtra(TITLE, intent.getStringExtra(TITLE))
+//        intentService.putExtra(SNOOZE_LENGTH, intent.getIntExtra(SNOOZE_LENGTH, -1))
+//        intentService.putExtra(SNOOZES_LEFT, intent.getIntExtra(SNOOZES_LEFT, -1))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             context.startForegroundService(intentService)
         } else{

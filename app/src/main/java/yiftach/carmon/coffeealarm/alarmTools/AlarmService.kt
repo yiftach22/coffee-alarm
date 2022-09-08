@@ -6,15 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.*
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import yiftach.carmon.coffeealarm.CHANNEL_ID
 import yiftach.carmon.coffeealarm.R
+import yiftach.carmon.coffeealarm.*
 import yiftach.carmon.coffeealarm.activities.RingActivity
 
 
 class AlarmService: Service() {
-
-
 
     lateinit var mediaPlayer: MediaPlayer
     lateinit var vibrator: Vibrator
@@ -41,8 +41,14 @@ class AlarmService: Service() {
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
 
         val alarmTitle = intent?.getStringExtra(TITLE)
-        val numberOfSnoozes = intent?.getIntExtra("numOfSnoozes", 0)
-        val alarmContentText = "${if (numberOfSnoozes == 0) "No" else numberOfSnoozes} snoozes left!"
+//        val snoozesLeft = intent?.getIntExtra(SNOOZES_LEFT, -1)
+//        val snoozeLength = intent?.getIntExtra(SNOOZE_LENGTH, -1)
+//        notificationIntent.putExtra(SNOOZE_LENGTH, snoozeLength)
+//        notificationIntent.putExtra(SNOOZES_LEFT, snoozesLeft)
+        val sp = this.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+        val snoozesLeft = sp.getInt(SNOOZES_LEFT, -1)
+
+        val alarmContentText = "${if (snoozesLeft == 0) "No" else snoozesLeft} snoozes left!"
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(alarmTitle)

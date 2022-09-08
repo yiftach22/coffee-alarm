@@ -6,7 +6,7 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.NumberPicker.OnValueChangeListener
 import android.widget.TimePicker
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -36,9 +36,23 @@ class SetAlarmFragment : Fragment() {
         binding.timePicker.setIs24HourView(DateFormat.is24HourFormat(activity))
 
         // Set snooze number picker
-        binding.snoozeNp.maxValue = 10
-        binding.snoozeNp.minValue = 0
-        binding.snoozeNp.value = 3
+        binding.snoozeNumberNp.maxValue = 10
+        binding.snoozeNumberNp.minValue = 0
+        binding.snoozeNumberNp.value = 5
+        binding.snoozeTimeNp.maxValue = 10
+        binding.snoozeTimeNp.minValue = 1
+        binding.snoozeTimeNp.value = 5
+        binding.snoozeNumberNp.wrapSelectorWheel = false
+        binding.snoozeTimeNp.wrapSelectorWheel = false
+        binding.snoozeNumberNp.setOnValueChangedListener { _, oldVal, newVal ->
+            if (newVal == 0) {
+                binding.snoozeTimeNp.isEnabled = false
+                binding.snoozeTimeLayout.alpha = 0.5F
+            } else if (oldVal == 0){
+                binding.snoozeTimeNp.isEnabled = true
+                binding.snoozeTimeLayout.alpha = 1F
+            }
+        }
 
         binding.setBtn.setOnClickListener {
             scheduleAlarm()
@@ -54,11 +68,12 @@ class SetAlarmFragment : Fragment() {
             getHour(binding.timePicker),
             getMinute(binding.timePicker),
             binding.titleEt.text.toString(),
-            binding.snoozeNp.value,
+            binding.snoozeNumberNp.value,
+            binding.snoozeTimeNp.value,
             false,
         )
         alarm.schedule(requireContext())
-        setAlarmViewModel.setAlarm(requireActivity(), alarm)
+//        setAlarmViewModel.setAlarm(requireActivity(), alarm)
     }
 
 

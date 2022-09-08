@@ -3,6 +3,7 @@ package yiftach.carmon.coffeealarm.fragments
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,6 @@ import yiftach.carmon.coffeealarm.databinding.FragmentCurrentAlarmBinding
 class CurrentAlarmFragment : Fragment() {
 
     private var activeAlarm: Alarm? = null
-    private lateinit var sp: SharedPreferences
     private val currentAlarmViewModel: CurrentAlarmViewModel by viewModels()
 
     // binding
@@ -31,7 +31,7 @@ class CurrentAlarmFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCurrentAlarmBinding.inflate(inflater, container, false)
-        activeAlarm = currentAlarmViewModel.getAlarmFromSp(requireActivity())
+        activeAlarm = currentAlarmViewModel.getAlarmFromSp(requireContext())
         if (activeAlarm == null) {
             setNoAlarmView()
         } else {
@@ -75,7 +75,7 @@ class CurrentAlarmFragment : Fragment() {
 
         binding.alarmTimeTv.text = String.format("%02d:%02d", hours, activeAlarm!!.minute)
         binding.alarmTitleTv.text = activeAlarm!!.title
-        binding.snoozeNumberTv.text = activeAlarm!!.snoozesLeft.toString()
+        binding.snoozeTitleTv.text = activeAlarm!!.snoozesLeft.toString()
         binding.cancelBtn.setOnClickListener {
             activeAlarm!!.cancelAlarm(requireContext())
             currentAlarmViewModel.removeAlarm(requireActivity())

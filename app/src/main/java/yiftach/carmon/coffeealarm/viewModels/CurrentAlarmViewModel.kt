@@ -10,8 +10,8 @@ import yiftach.carmon.coffeealarm.alarmTools.Alarm
 
 class CurrentAlarmViewModel() : ViewModel() {
 
-    fun getAlarmFromSp(activity: Activity): Alarm? {
-        val sp = activity.getPreferences(Context.MODE_PRIVATE)
+    fun getAlarmFromSp(context:Context): Alarm? {
+        val sp = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
         val isSet = sp.getBoolean(IS_SET, false)
         if (isSet) {
             val alarmId = sp.getInt(ALARM_ID, 0)
@@ -19,12 +19,14 @@ class CurrentAlarmViewModel() : ViewModel() {
             val minute = sp.getInt(MINUTE, 0)
             val title = sp.getString(TITLE, "Alarm") ?: ""
             val snoozesLeft = sp.getInt(SNOOZES_LEFT, 0)
+            val snoozeLength = sp.getInt(SNOOZE_LENGTH, 2)
             return Alarm(
                 alarmId,
                 hour,
                 minute,
                 title,
                 snoozesLeft,
+                snoozeLength,
                 false,
             )
         }
